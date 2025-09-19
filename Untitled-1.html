@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ulang Tahun Interaktif</title>
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #ffb6c1;
+    overflow: hidden;
+}
+
+/* Overlay popup */
+.overlay {
+    display: none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 5;
+}
+
+/* Popup pertanyaan */
+.popup {
+    display: none;
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    width: 350px;
+    background: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+    z-index: 10;
+    animation: fadeIn 0.5s ease;
+}
+
+.popup h2 {
+    margin-bottom: 15px;
+}
+
+.popup img {
+    width: 150px;
+    height: 150px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+}
+
+.popup button {
+    padding: 10px 20px;
+    margin: 10px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 10px;
+    background: #ff4b2b;
+    color: #fff;
+    cursor: pointer;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translate(-50%, -60%);}
+    to {opacity: 1; transform: translate(-50%, -50%);}
+}
+
+/* Halaman ulang tahun */
+#birthdayPage {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    text-align: center;
+    position: relative;
+}
+
+h1 {
+    font-size: 3rem;
+    color: #fff;
+    text-shadow: 2px 2px #ff4b2b;
+    margin-top: 30px;
+}
+
+.cake {
+    position: relative;
+    width: 150px;
+    height: 100px;
+    margin: 20px auto;
+    background: #ff69b4;
+    border-radius: 0 0 20px 20px;
+}
+
+.cake::before {
+    content: "";
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background: #ffcc00;
+    border-radius: 50%;
+}
+
+.candle {
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 40px;
+    background: #fff;
+    border-radius: 2px;
+}
+
+.flame {
+    position: absolute;
+    top: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 20px;
+    background: orange;
+    border-radius: 50%;
+    animation: flicker 0.5s infinite alternate;
+}
+
+@keyframes flicker {
+    0% { transform: translateX(-50%) scaleY(1); opacity: 1; }
+    50% { transform: translateX(-50%) scaleY(1.2); opacity: 0.8; }
+    100% { transform: translateX(-50%) scaleY(0.8); opacity: 0.6; }
+}
+
+/* Stiker animasi loncat */
+.sticker {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    animation: jump 1s infinite alternate;
+}
+
+@keyframes jump {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-30px); }
+    100% { transform: translateY(0); }
+}
+
+/* Popup surat */
+.letterPopup {
+    display: none;
+    position: fixed;
+    top:50%;
+    left:50%;
+    width: 350px;
+    background: #fff8f0;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+    z-index: 20;
+    transform: translate(-50%, -50%) scale(0) rotateX(90deg);
+    transform-origin: top center;
+    transition: transform 0.6s ease;
+}
+
+.letterPopup.show {
+    transform: translate(-50%, -50%) scale(1) rotateX(0deg);
+}
+
+.letterPopup h2 { color: #ff4b2b; margin-bottom: 15px; }
+.letterPopup p { font-size: 1rem; line-height: 1.5; color: #333; }
+.letterPopup button { margin-top: 15px; background: #ff4b2b; color: #fff; cursor:pointer; }
+
+/* Animasi love */
+.loveAnimation {
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    font-size: 5rem;
+    opacity: 0;
+    animation: lovePop 3s forwards;
+    z-index: 30;
+}
+
+@keyframes lovePop {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    50% { transform: translate(-50%, -60%) scale(1.5); opacity: 1; }
+    100% { transform: translate(-50%, -80%) scale(1) opacity: 0; }
+}
+
+/* Halaman album romantis */
+#albumPage {
+    display: none;
+    width: 100%;
+    height: 100vh;
+    background: #ffe6f0;
+    text-align: center;
+    padding-top: 50px;
+    position: relative;
+}
+
+#albumPage h1 {
+    color: #ff4b2b;
+    font-size: 3rem;
+}
+
+.albumContent {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.albumContent img {
+    width: 200px;
+    height: 200px;
+    margin: 10px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s, z-index 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+
+/* Efek zoom gambar saat hover */
+.albumContent img:hover {
+    transform: scale(2.5);
+    z-index: 50;
+}
+
+/* Confetti canvas */
+canvas {
+    position: fixed;
+    top:0;
+    left:0;
+    pointer-events: none;
+    z-index: 1;
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay"></div>
+
+<!-- Popup pertanyaan -->
+<div class="popup" id="popup0">
+    <h2>Halo wanita paling cantik</h2>
+    <img src="b09a0682c2cd4d291bf195d52870affd.gif" alt="Cake GIF">
+    <div>
+        <button onclick="answerPopup()">Yes</button>
+        <button onclick="answerPopup()">No</button>
+    </div>
+</div>
+
+<div class="popup" id="popup1">
+    <h2>Apakah ini acha?</h2>
+    <img src="c.gif" alt="Gift GIF">
+    <div>
+        <button onclick="answerPopup()">Yes</button>
+        <button onclick="answerPopup()">No</button>
+    </div>
+</div>
+
+<div class="popup" id="popup2">
+    <h2>Apakah hari ini menyenangkan?</h2>
+    <img src="d.png" alt="Happy GIF">
+    <div>
+        <button onclick="answerPopup()">Yes</button>
+        <button onclick="answerPopup()">No</button>
+    </div>
+</div>
+
+<div class="popup" id="popup3">
+    <h2>Apakah kamu sayang aku?</h2>
+    <img src="sticker.gif" alt="Confetti GIF">
+    <div>
+        <button onclick="answerPopup()">Yes</button>
+        <button onclick="answerPopup()">No</button>
+    </div>
+</div>
+
+<!-- Halaman ulang tahun -->
+<div id="birthdayPage">
+    <h1>Selamat Ulang Tahun, achaa!</h1>
+    <div class="cake">
+        <div class="candle"></div>
+        <div class="flame"></div>
+    </div>
+</div>
+
+<!-- Popup surat -->
+<div class="letterPopup" id="letterPopup">
+    <h2>Surat Ulang Tahun untuk Achaa</h2>
+    <p>Selamat ulang tahun, Achaa! Semoga hari ini penuh kebahagiaan, senyum, dan kejutan manis. Semoga semua impianmu menjadi kenyataan dan selalu dikelilingi orang-orang yang menyayangimu. Tetap semangat, bahagia, dan sehat selalu! 🎉💖</p>
+    <button onclick="closeLetter()">Tutup</button>
+</div>
+
+<!-- Halaman album romantis -->
+<div id="albumPage">
+    <h1>wanita tercantiku</h1>
+    <div class="albumContent">
+        <img src="a.jpg" alt="Foto 1">
+        <img src="ss.jpg" alt="Foto 2">
+        <img src="Screenshot_20250919-073134.jpg" alt="Foto 3">
+        <img src="b.jpg" alt="Foto 4">
+    </div>
+    <audio id="romanticMusic" loop>
+        <source src="ssstik.io_@ur_home7_1758280440498.mp4" type="audio/mpeg">
+        Browsermu tidak mendukung audio.
+    </audio>
+</div>
+
+<canvas  id="confettiCanvas"></canvas>
+
+<script>
+const overlay = document.getElementById('overlay');
+const popups = [document.getElementById('popup0'),document.getElementById('popup1'),document.getElementById('popup2'),document.getElementById('popup3')];
+let currentPopup = 0;
+
+window.onload = () => showPopup(currentPopup);
+
+function showPopup(index){ overlay.style.display='block'; popups[index].style.display='block'; }
+function hidePopup(index){ overlay.style.display='none'; popups[index].style.display='none'; }
+
+function answerPopup(){
+    hidePopup(currentPopup);
+    currentPopup++;
+    if(currentPopup<popups.length){
+        setTimeout(()=>showPopup(currentPopup),300);
+    } else {
+        document.getElementById('birthdayPage').style.display='block';
+        createStickers();
+        createConfetti(200);
+        setTimeout(showLetterPopup,5000);
+    }
+}
+
+function showLetterPopup() {
+    overlay.style.display='block';
+    const letter = document.getElementById('letterPopup');
+    letter.style.display='block';
+    setTimeout(()=>{ letter.classList.add('show'); },50);
+}
+
+function closeLetter(){
+    const letter = document.getElementById('letterPopup');
+    letter.classList.remove('show');
+    setTimeout(()=>{
+        letter.style.display='none';
+        overlay.style.display='none';
+        const love = document.createElement('div');
+        love.className='loveAnimation';
+        love.textContent='❤️';
+        document.body.appendChild(love);
+        setTimeout(()=>{
+            document.body.removeChild(love);
+            document.getElementById('birthdayPage').style.display='none';
+            document.getElementById('albumPage').style.display='block';
+            playAlbumMusic();
+        },3000);
+    },600);
+}
+
+function playAlbumMusic(){
+    const music = document.getElementById('romanticMusic');
+    music.play().catch(e=>console.log("Autoplay diblokir, klik halaman untuk memulai musik"));
+}
+
+// Stiker loncat
+function createStickers(){
+    const page = document.getElementById('birthdayPage');
+    const gifs=['c.gif','d.png','sticker.gif'];
+    gifs.forEach((src,i)=>{
+        const img = document.createElement('img');
+        img.src = src;
+        img.className = 'sticker';
+        img.style.left=`${50+i*150}px`;
+        img.style.top='-150px';
+        page.appendChild(img);
+        let pos=-150;
+        let speed=Math.random()*3+2;
+        function fall(){
+            if(pos<window.innerHeight-150){
+                pos+=speed;
+                img.style.top=pos+'px';
+                requestAnimationFrame(fall);
+            }
+        }
+        fall();
+    });
+}
+
+// Confetti
+const canvas=document.getElementById('confettiCanvas');
+const ctx=canvas.getContext('2d');
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let confettis=[];
+class Confetti{
+    constructor(){
+        this.x=Math.random()*canvas.width;
+        this.y=Math.random()*canvas.height-canvas.height;
+        this.size=Math.random()*10+5;
+        this.speed=Math.random()*3+2;
+        this.color=`hsl(${Math.random()*360},100%,50%)`;
+    }
+    draw(){ ctx.fillStyle=this.color; ctx.fillRect(this.x,this.y,this.size,this.size);}
+    update(){ this.y+=this.speed; if(this.y>canvas.height)this.y=-this.size; this.draw();}
+}
+function createConfetti(num){ for(let i=0;i<num;i++) confettis.push(new Confetti()); }
+function animate(){ ctx.clearRect(0,0,canvas.width,canvas.height); confettis.forEach(c=>c.update()); requestAnimationFrame(animate);}
+animate();
+</script>
+</body>
+</html>
